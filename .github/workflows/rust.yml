@@ -38,6 +38,6 @@ jobs:
                   -H "Accept:application/vnd.github+json"
                   -H "Authorization:Bearer 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" 
                   -H "X-GitHub-Api-Version:2022-11-28" 
-                  https://api.github.com/repos${{ github.action_repository }}/actions/workflows/post-rust.yml/dispatches 
+                  https://api.github.com/repos/${{ github.action.repository }}/actions/workflows/post-rust.yml/dispatches 
                   -d '{"ref":"${{ github.ref }}","inputs":{"run-id":"${{ github.run_id }}"}}'
     
