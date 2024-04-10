@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: scrap-job-logs
-      run: cargo run -- --workflow-id ${{ inputs.run_id }} 
+      run: cargo run -- --workflow-id ${{ inputs.run-id }} 
                         --github-token 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 
                         --owner PickDough 
                         --repo test-scrapper
