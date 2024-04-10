@@ -25,6 +25,7 @@ jobs:
     - name: output-2
       run: cat ci/sample-outputs/output2.txt && fail-fail-fail
   call-post-rust:
+    if: always()
     needs:
     - output-2
     - output-1-and-3
