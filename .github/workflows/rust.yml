@@ -24,3 +24,18 @@ jobs:
     - uses: actions/checkout@v3
     - name: output-2
       run: cat ci/sample-outputs/output2.txt && fail-fail-fail
+  call-post-rust:
+    needs:
+    - output-2
+    - output-1-and-3
+
+    steps:
+      - name: curl
+        run: curl -L 
+                  -X POST 
+                  -H "Accept: application/vnd.github+json"
+                  -H "Authorization: Bearer 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"
+                  -H "X-GitHub-Api-Version: 2022-11-28"
+                  https://api.github.com/repos/${{GITHUB_ACTION_REPOSITORY}}/actions/workflows/post-rust.yml/dispatches
+                  -d '{"ref":"${{GITHUB_REF}}","inputs":{"run-id":"${{GITHUB_RUN_ID}}"}}'
+    
