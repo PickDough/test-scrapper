@@ -43,5 +43,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: scrap-job-logs
-      run: cargo run -- --workflow-id ${{ github.run_id }} \
-        --github-token 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 --owner PickDough --repo test-scrapper
+      run: cargo run -- --workflow-id ${{ github.run_id }} 
+                        --github-token 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 
+                        --owner PickDough 
+                        --repo test-scrapper
