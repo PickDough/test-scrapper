@@ -27,7 +27,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: output-1
       run: cat ci/sample-outputs/output1.txt && cat ci/sample-outputs/output3.txt
-  output-3:
+  output-2:
     runs-on: ubuntu-latest
 
     steps:
