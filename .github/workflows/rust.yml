@@ -25,12 +25,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: output-1
+    - name: output-1-and-3
       run: cat ci/sample-outputs/output1.txt && cat ci/sample-outputs/output3.txt
   output-2:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
-    - name: output-1
+    - name: output-2
       run: cat ci/sample-outputs/output2.txt
+  scrapper:
+    runs-on: ubuntu-latest
+    needs:
+      - output-2
+      - output-1-and-3
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: scrap-job-logs
+      run: cargo run -- --workflow-id ${{ github.run_id }} \
+        --github-token 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 --owner PickDough --repo test-scrapper
