@@ -1,0 +1,64 @@
+[
+    {
+        "run_id": 8394460535,
+        "jobs": [
+            {
+                "job": "test (medea-jason, android)",
+                "failures": []
+            },
+            {
+                "job": "test (E2E, ios)",
+                "failures": [
+                    {
+                        "scenario": "Scenario Member disables audio before call # /Users/runner/work/medea-jason/medea-jason/flutter/./../e2e/tests/features/media_disable.feature:0\n2024-03-22T18:28:32.6071390Z ",
+                        "step": "And Alice's device video remote track from Bob is enabled # :0 took 30001ms  \n2024-03-22T18:28:32.4901380Z TimeoutException after 0:00:30.000000: Future not completed\n2024-03-22T18:28:32.4903880Z "
+                    }
+                ]
+            },
+            {
+                "job": "test (E2E, linux)",
+                "failures": [
+                    {
+                        "scenario": "Scenario Member disables audio before call # /home/runner/work/medea-jason/medea-jason/flutter/./../e2e/tests/features/media_disable.feature:0\n2024-03-22T18:09:12.2368062Z ",
+                        "step": "And Alice's device video remote track from Bob is enabled # :0 took 30002ms  \n2024-03-22T18:09:12.1304563Z TimeoutException after 0:00:30.000000: Future not completed\n2024-03-22T18:09:12.1306419Z "
+                    },
+                    {
+                        "scenario": "Scenario Member enables video during call # /home/runner/work/medea-jason/medea-jason/flutter/./../e2e/tests/features/media_disable.feature:0\n2024-03-22T18:09:43.1205016Z ",
+                        "step": "Then Alice's device video remote track from Bob is enabled # :0 took 30000ms  \n2024-03-22T18:09:43.0030721Z TimeoutException after 0:00:30.000000: Future not completed\n2024-03-22T18:09:43.0032631Z "
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "run_id": 8394460536,
+        "jobs": [
+            {
+                "job": "test (medea-jason, android)",
+                "failures": []
+            },
+            {
+                "job": "test (E2E, ios)",
+                "failures": [
+                    {
+                        "scenario": "Scenario Member disables audio before call # /Users/runner/work/medea-jason/medea-jason/flutter/./../e2e/tests/features/media_disable.feature:0\n2024-03-22T18:28:32.6071390Z ",
+                        "step": "And Alice's device video remote track from Bob is enabled # :0 took 30001ms  \n2024-03-22T18:28:32.4901380Z TimeoutException after 0:00:30.000000: Future not completed\n2024-03-22T18:28:32.4903880Z "
+                    }
+                ]
+            },
+            {
+                "job": "test (E2E, macos)",
+                "failures": [
+                    {
+                        "scenario": "Scenario Member disables audio before call # /home/runner/work/medea-jason/medea-jason/flutter/./../e2e/tests/features/media_disable.feature:0\n2024-03-22T18:09:12.2368062Z ",
+                        "step": "And Alice's device video remote track from Bob is enabled # :0 took 30002ms  \n2024-03-22T18:09:12.1304563Z TimeoutException after 0:00:30.000000: Future not completed\n2024-03-22T18:09:12.1306419Z "
+                    },
+                    {
+                        "scenario": "Scenario Member enables video during call # /home/runner/work/medea-jason/medea-jason/flutter/./../e2e/tests/features/media_disable.feature:0\n2024-03-22T18:09:43.1205016Z ",
+                        "step": "Then Alice's device video remote track from Bob is enabled # :0 took 30000ms  \n2024-03-22T18:09:43.0030721Z TimeoutException after 0:00:30.000000: Future not completed\n2024-03-22T18:09:43.0032631Z "
+                    }
+                ]
+            }
+        ]
+    }
+]

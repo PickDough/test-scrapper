@@ -2,7 +2,6 @@ use std::mem;
 
 use anyhow::Result;
 use async_recursion::async_recursion;
-use bytes::Bytes;
 use reqwest::{
     header::{ACCEPT, AUTHORIZATION, USER_AGENT},
     Method, Request,
@@ -15,28 +14,24 @@ pub struct GithubClient {
     client: reqwest::Client,
 
     token: String,
-    owner: String,
-    repo: String,
+    owner_repo: String,
 }
 
 impl GithubClient {
-    pub fn new(token: String, owner: String, repo: String) -> Self {
+    pub fn new(token: String, owner_repo: String) -> Self {
         let client = reqwest::Client::new();
 
         Self {
             client,
             token,
-            owner,
-            repo,
+            owner_repo,
         }
     }
 
     pub async fn get_failed_workflow_jobs(&self, workflow_id: u64) -> Result<Vec<Job>> {
         let url = format!(
-            "https://api.github.com/repos/{owner}/{repo}/actions/runs/{workflow_id}/jobs",
-            owner = self.owner,
-            repo = self.repo,
-            workflow_id = workflow_id
+            "https://api.github.com/repos/{owner_repo}/actions/runs/{workflow_id}/jobs",
+            owner_repo = self.owner_repo
         );
         let req = self.build_request(url)?;
 
@@ -59,9 +54,8 @@ impl GithubClient {
 
     pub async fn download_job_logs(&self, job: &Job) -> Result<String> {
         let url = format!(
-            "https://api.github.com/repos/{owner}/{repo}/actions/jobs/{job_id}/logs",
-            owner = self.owner,
-            repo = self.repo,
+            "https://api.github.com/repos/{owner_repo}/actions/jobs/{job_id}/logs",
+            owner_repo = self.owner_repo,
             job_id = job.id
         );
 

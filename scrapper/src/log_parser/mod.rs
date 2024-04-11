@@ -1,16 +1,10 @@
+use common::Failure;
 use pest::Parser;
 use pest_derive::Parser;
-use serde::Serialize;
 
 #[derive(Parser)]
 #[grammar = "log_parser/failed_tests.pest"]
 pub struct FailedTestsParser;
-
-#[derive(Debug, Serialize)]
-pub struct Failure {
-    scenario: String,
-    step: String,
-}
 
 impl FailedTestsParser {
     pub fn parse_failed_tests(input: &str) -> Vec<Failure> {
