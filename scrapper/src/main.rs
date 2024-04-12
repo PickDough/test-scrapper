@@ -42,7 +42,10 @@ async fn main() -> Result<()> {
     save_to_file(
         FailedRun {
             run_id,
-            jobs: loged_failures,
+            jobs: loged_failures
+                .into_iter()
+                .filter(|j| !j.failures.is_empty())
+                .collect(),
         },
         cli.output,
     )
@@ -75,7 +78,10 @@ async fn parse_logs(jobs: Vec<Job>, client: &GithubClient) -> Vec<FailedJob> {
                 let logs = client.download_job_logs(&job).await.unwrap();
                 FailedJob {
                     job: job.name,
-                    failures: log_parser::FailedTestsParser::parse_failed_tests(&logs),
+                    failures: log_parser::FailedTestsParser::parse_failed_tests(
+                        &logs,
+                        client.owner_repo.as_str(),
+                    ),
                 }
             })
         })

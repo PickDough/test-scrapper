@@ -1,6 +1,12 @@
 TRASH       = _{ (!(FAILED_TEST | FAILED_STEP) ~ ANY) }
 FAILED_TEST = _{ "FAILED: " }
 FAILED_STEP = _{ "× " }
-FAILED_MSG  =  { (!"flutter: " ~ ANY)+ }
-FAILURE     =  { FAILED_STEP ~ FAILED_MSG ~ "flutter: " ~ FAILED_TEST ~ FAILED_MSG }
-LOG         = _{ SOI ~ (TRASH* ~ FAILURE)* ~ TRASH* ~ EOI }
+
+FAILED_STEP_MSG = { (!"flutter: " ~ ANY)+ }
+
+SCENARIO_PART       = { (!" # " ~ ANY)+ }
+PATH_PART           = { (!"flutter: " ~ ANY)+ }
+FAILED_SCENARIO_MSG = { SCENARIO_PART ~ " # " ~ PATH_PART }
+
+FAILURE =  { FAILED_STEP ~ FAILED_STEP_MSG ~ "flutter: " ~ FAILED_TEST ~ FAILED_SCENARIO_MSG }
+LOG     = _{ SOI ~ (TRASH* ~ FAILURE)* ~ TRASH* ~ EOI }

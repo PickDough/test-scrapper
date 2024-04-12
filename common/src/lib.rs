@@ -14,6 +14,12 @@ pub struct FailedJob {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Failure {
-    pub scenario: String,
+    pub scenario: FailedScenario,
     pub step: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct FailedScenario {
+    pub name: String,
+    pub link: String,
 }

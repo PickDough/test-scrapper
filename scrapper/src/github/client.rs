@@ -14,7 +14,7 @@ pub struct GithubClient {
     client: reqwest::Client,
 
     token: String,
-    owner_repo: String,
+    pub owner_repo: String,
 }
 
 impl GithubClient {
