@@ -25,6 +25,7 @@ jobs:
     - name: output-2
       run: cat ci/sample-outputs/output2.txt && fail-fail-fail
   call-post-rust:
+    permissions: read-all
     if: always()
     needs:
     - output-2
