@@ -20,15 +20,12 @@ struct FailedRunValue {
 
 #[function_component]
 pub fn App() -> Html {
-    // let file = File::open("./runs.json").unwrap();
-    // let prev_failures: Vec<FailedRun> = serde_json::from_reader(file).unwrap();
-
     let failed_runs = use_state(|| vec![]);
     {
         let failed_runs = failed_runs.clone();
         use_effect_with((), move |_| {
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_runs: Vec<FailedRun> = Request::get("/static/runs.json")
+                let fetched_runs: Vec<FailedRun> = Request::get("/public/runs.json")
                     .send()
                     .await
                     .unwrap()
