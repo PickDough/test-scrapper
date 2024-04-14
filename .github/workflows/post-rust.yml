@@ -9,13 +9,59 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  scrapper:
+  scrapepr-visualizer:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
-    - name: scrap-job-logs
+    - name: scrap-run-logs
       run: cargo run -p scrapper -- --run-id ${{ inputs.run-id }} 
                         --github-token ${{ secrets.GITHUB_TOKEN }} 
-                        --owner PickDough 
-                        --repo test-scrapper
+                        --owner-repo PickDough/test-scrapper
+                        --output ./visualizer/static/runs.json
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Restore cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin
+          ~/.cargo/git
+          ~/.cargo/registry
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Install Trunk
+      uses: jetli/trunk-action@v0.4.0
+      with:
+        # Optional version of trunk to install(eg. 'v0.16.0', 'latest')
+        version: "latest"
+    - name: Add wasm target
+      run: |
+        rustup target add wasm32-unknown-unknown
+    - name: Build the Rust WASM app and all of its assets
+      run: trunk build --public-url ${{ github.event.repository.name }} --release ./visualizer/index.html
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: "./visualizer/dist"
+
+  deploy:
+    needs: scrapepr-visualizer
+    runs-on: ubuntu-latest
+    
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+
