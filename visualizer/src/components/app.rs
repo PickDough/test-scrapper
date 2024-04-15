@@ -27,7 +27,7 @@ pub fn App() -> Html {
         use_effect_with((), move |_| {
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_runs: Vec<FailedRun> =
-                    Request::get("/public/runs.json")
+                    Request::get("/test-scrapper/public/runs.json")
                         .send()
                         .await
                         .unwrap()
