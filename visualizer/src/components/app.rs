@@ -1,8 +1,9 @@
-use std::{collections::HashMap, fs::File};
+use crate::components::cards::{
+    header::CardHeader, percentage::CardBodyPercentage,
+    scenario::CardBodyScenario, test::CardBodyTest,
+};
+use std::collections::HashMap;
 
-use crate::components::card_body::{CardBody, CardBodyScenario};
-
-use super::card_header::CardHeader;
 use common::FailedRun;
 use gloo_net::http::Request;
 use yew::prelude::*;
@@ -25,19 +26,21 @@ pub fn App() -> Html {
         let failed_runs = failed_runs.clone();
         use_effect_with((), move |_| {
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_runs: Vec<FailedRun> = Request::get("/test-scrapper/public/runs.json")
-                    .send()
-                    .await
-                    .unwrap()
-                    .json()
-                    .await
-                    .unwrap();
+                let fetched_runs: Vec<FailedRun> =
+                    Request::get("/public/runs.json")
+                        .send()
+                        .await
+                        .unwrap()
+                        .json()
+                        .await
+                        .unwrap();
                 failed_runs.set(fetched_runs);
             });
             || ()
         });
     }
-    let mut failed_runs_map: HashMap<FailedRunKey, FailedRunValue> = HashMap::new();
+    let mut failed_runs_map: HashMap<FailedRunKey, FailedRunValue> =
+        HashMap::new();
     for (job, failed_scenario) in failed_runs
         .iter()
         .flat_map(|r| &r.jobs)
@@ -86,7 +89,14 @@ pub fn App() -> Html {
             </div>
             <div class="row">
                 {
-                    failed_runs_vec.into_iter().enumerate().map(|(id, (key, value))| {
+                    failed_runs_vec
+                        .into_iter()
+                        .enumerate()
+                        .map(|(id, (key, value))|
+                    {
+                    let percentage =
+                        (value.count as f64 / total_count * 100f64)
+                        .to_string();
                     html! {
                         <>
                         <div class="col-7">
@@ -100,14 +110,15 @@ pub fn App() -> Html {
                                 />
                         </div>
                         <div class="col-3">
-                            <CardBody>
+                            <CardBodyTest>
                                 {&key.job}
-                            </CardBody>
+                            </CardBodyTest>
                         </div>
                         <div class="col-2">
-                            <CardBody style="danger">
-                                {format!("{}%", value.count as f64 / total_count * 100f64)}
-                            </CardBody>
+                            <CardBodyPercentage style="danger"
+                                progress={percentage.clone()}>
+                                {percentage.clone() + "%"}
+                            </CardBodyPercentage>
                         </div>
                     </>
                     }

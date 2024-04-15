@@ -28,9 +28,13 @@ impl GithubClient {
         }
     }
 
-    pub async fn get_failed_workflow_jobs(&self, workflow_id: u64) -> Result<Vec<Job>> {
+    pub async fn get_failed_workflow_jobs(
+        &self,
+        workflow_id: u64,
+    ) -> Result<Vec<Job>> {
         let url = format!(
-            "https://api.github.com/repos/{owner_repo}/actions/runs/{workflow_id}/jobs",
+            "https://api.github.com/repos/{owner_repo}\
+            /actions/runs/{workflow_id}/jobs",
             owner_repo = self.owner_repo
         );
         let req = self.build_request(url)?;
@@ -54,7 +58,8 @@ impl GithubClient {
 
     pub async fn download_job_logs(&self, job: &Job) -> Result<String> {
         let url = format!(
-            "https://api.github.com/repos/{owner_repo}/actions/jobs/{job_id}/logs",
+            "https://api.github.com/repos/{owner_repo}\
+            /actions/jobs/{job_id}/logs",
             owner_repo = self.owner_repo,
             job_id = job.id
         );
@@ -71,8 +76,10 @@ impl GithubClient {
             .insert(ACCEPT, "application/vnd.github+json".try_into()?);
         req.headers_mut()
             .insert("X-GitHub-Api-Version", "2022-11-28".try_into()?);
-        req.headers_mut()
-            .insert(AUTHORIZATION, format!("Bearer {}", self.token).try_into()?);
+        req.headers_mut().insert(
+            AUTHORIZATION,
+            format!("Bearer {}", self.token).try_into()?,
+        );
         req.headers_mut()
             .insert(USER_AGENT, "test-scrapper 0.1.0".try_into()?);
         Ok(req)
@@ -84,14 +91,16 @@ impl GithubClient {
         mut request: Request,
         mut f: F,
     ) -> Result<()> {
-        let response = self.client.execute(request.try_clone().unwrap()).await?;
+        let response =
+            self.client.execute(request.try_clone().unwrap()).await?;
 
         let next = response
             .headers()
             .get("Link")
             .and_then(|link| {
                 let link = link.to_str().unwrap();
-                let next = link.split(',').find(|link| link.contains("rel=\"next\""));
+                let next =
+                    link.split(',').find(|link| link.contains("rel=\"next\""));
                 next.map(|link| link.split(';').next().unwrap().trim())
             })
             .map(|link| link.trim_matches(|c| c == '<' || c == '>').to_owned());
@@ -99,7 +108,10 @@ impl GithubClient {
         f(response.text().await?);
 
         if next.is_some() {
-            let _ = mem::replace(request.url_mut(), next.unwrap().as_str().try_into()?);
+            let _ = mem::replace(
+                request.url_mut(),
+                next.unwrap().as_str().try_into()?,
+            );
             self.paginated_request(request, f).await
         } else {
             Ok(())
