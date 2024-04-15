@@ -126,7 +126,9 @@ pub fn App() -> Html {
                         <div class="col-2">
                             <CardBodyPercentage style="danger"
                                 percentage={percentage.clone()}>
-                                {percentage.clone().push('%')}
+                                {
+                                    format!("{}%", percentage)
+                                }
                             </CardBodyPercentage>
                         </div>
                     </>
