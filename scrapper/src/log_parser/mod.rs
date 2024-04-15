@@ -1,30 +1,40 @@
+//! Module for parsing log files of failed jobs.
 use common::{FailedScenario, Failure};
 use pest::Parser;
 use pest_derive::Parser;
 
+/// Struct to parse failed tests from log files basef of [``pest``]grammar
 #[derive(Parser)]
 #[grammar = "log_parser/failed_tests.pest"]
-pub struct FailedTestsParser;
+pub(crate) struct FailedTestsParser;
 
 impl FailedTestsParser {
-    pub fn parse_failed_tests(input: &str, owner_repo: &str) -> Vec<Failure> {
-        let pairs = FailedTestsParser::parse(Rule::LOG, input)
-            .unwrap_or_else(|e| panic!("{}", e));
+    #[allow(clippy::unwrap_used)]
+    /// Parses the failed tests from the log file. Also trys to build a link to
+    /// failed feature using the `owner_repo`.
+    pub(crate) fn parse_failed_tests(
+        input: &str,
+        owner_repo: &str,
+    ) -> Vec<Failure> {
+        let pairs =
+            Self::parse(Rule::LOG, input).unwrap_or_else(|e| panic!("{}", e));
 
         pairs
-            .flat_map(|pair| match pair.as_rule() {
+            .filter_map(|pair| match pair.as_rule() {
                 Rule::FAILURE => {
-                    let mut pairs = pair.into_inner();
-                    let step = pairs.next().unwrap().as_str().to_string();
+                    let mut failure_pairs = pair.into_inner();
+                    let step =
+                        failure_pairs.next().unwrap().as_str().to_owned();
 
-                    let mut scenario = pairs.next().unwrap().into_inner();
+                    let mut scenario =
+                        failure_pairs.next().unwrap().into_inner();
                     let scenario_part =
-                        scenario.next().unwrap().as_str().to_string();
+                        scenario.next().unwrap().as_str().to_owned();
                     let mut path_part =
-                        scenario.next().unwrap().as_str().to_string();
+                        scenario.next().unwrap().as_str().to_owned();
 
                     let path = path_part
-                        .split("\n")
+                        .split('\n')
                         .nth(0)
                         .unwrap()
                         .split("..")
@@ -45,7 +55,15 @@ impl FailedTestsParser {
                         step,
                     })
                 }
-                _ => None,
+                Rule::EOI
+                | Rule::TRASH
+                | Rule::FAILED_TEST
+                | Rule::FAILED_STEP
+                | Rule::FAILED_STEP_MSG
+                | Rule::SCENARIO_PART
+                | Rule::PATH_PART
+                | Rule::FAILED_SCENARIO_MSG
+                | Rule::LOG => None,
             })
             .collect()
     }

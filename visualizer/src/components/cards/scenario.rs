@@ -1,7 +1,8 @@
+//! Scenario card component.
 use yew::prelude::*;
 
 #[function_component]
-pub fn CardBodyScenario(props: &PropsScenario) -> Html {
+pub(crate) fn CardBodyScenario(props: &PropsScenario) -> Html {
     let classes =
         classes!("card", format!("text-bg-{}", props.style.clone()), "mb-3");
     html! {
@@ -44,16 +45,23 @@ pub fn CardBodyScenario(props: &PropsScenario) -> Html {
     }
 }
 
+/// Properties for the scenario card component.
 #[derive(Properties, PartialEq)]
-pub struct PropsScenario {
+pub(crate) struct PropsScenario {
+    /// The style of the card. Default is `light`. Look at Bootstrap colors for
+    /// more information.
     #[prop_or(AttrValue::from("light"))]
-    pub style: AttrValue,
+    pub(crate) style: AttrValue,
+    /// The steps of the scenario.
     #[prop_or(AttrValue::from(""))]
-    pub steps: AttrValue,
+    pub(crate) steps: AttrValue,
+    /// The link to the feature file.
     #[prop_or(AttrValue::from(""))]
-    pub link: AttrValue,
+    pub(crate) link: AttrValue,
+    /// The scenario name.
     #[prop_or(AttrValue::from(""))]
-    pub scenario: AttrValue,
+    pub(crate) scenario: AttrValue,
+    /// The unique id of the dropdown to toggle.
     #[prop_or(AttrValue::from(""))]
-    pub id: AttrValue,
+    pub(crate) id: AttrValue,
 }

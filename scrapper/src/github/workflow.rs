@@ -1,50 +1,64 @@
+//! GitHub Workflow Run data structures.
 use serde::{Deserialize, Serialize};
 
+/// Workflow run data structure. Contains a list of jobs runned by workflow.
 #[derive(Debug, Deserialize)]
-pub struct WorkflowRun {
-    pub jobs: Vec<Job>,
+pub(crate) struct WorkflowRun {
+    /// The list of jobs.
+    pub(crate) jobs: Vec<Job>,
 }
 
+/// Workflow job data structure. Contains a list of steps runned by job. And
+/// their status.
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Job {
-    pub id: u64,
-    pub name: String,
+pub(crate) struct Job {
+    /// Id of the job.
+    pub(crate) id: u64,
+    /// Name of the job.
+    pub(crate) name: String,
+    /// Conclusion of the job.
     conclusion: Conclusion,
+    /// Steps that job performed.
     steps: Vec<Step>,
 }
 
 impl Job {
-    pub fn into_failed_job(mut self) -> Option<Self> {
-        if self.conclusion.has_failed() {
+    /// Looks for failed steps in job. If threre are any, returns Some(self).
+    pub(crate) fn into_failed_job(mut self) -> Option<Self> {
+        self.conclusion.has_failed().then(|| {
             self.steps.retain(|step| step.conclusion.has_failed());
-
-            Some(self)
-        } else {
-            None
-        }
+            self
+        })
     }
 }
 
+/// Workflow step data structure. Contains the name of the step and its status.
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Step {
+pub(crate) struct Step {
+    /// Name of the step.
     name: String,
+    /// Conclusion of the step.
     conclusion: Conclusion,
 }
 
+/// Conclusion of a job or step.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum Conclusion {
+pub(crate) enum Conclusion {
+    /// The job or step was successful.
     Success,
+    /// The job or step failed.
     Failure,
+    /// The job or step was skipped.
     Skipped,
 }
 
 impl Conclusion {
-    fn has_failed(&self) -> bool {
+    /// Returns true if the job or step has [``Conclusion::Failure``] type.
+    const fn has_failed(&self) -> bool {
         match self {
-            Conclusion::Success => false,
-            Conclusion::Failure => true,
-            Conclusion::Skipped => false,
+            Self::Failure => true,
+            Self::Skipped | Self::Success => false,
         }
     }
 }

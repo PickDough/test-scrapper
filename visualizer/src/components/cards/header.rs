@@ -1,7 +1,8 @@
+//! Card header component.
 use yew::prelude::*;
 
 #[function_component]
-pub fn CardHeader(props: &Props) -> Html {
+pub(crate) fn CardHeader(props: &Props) -> Html {
     html! {
         <div class="card text-bg-primary mb-3">
             <div class="card-body">
@@ -11,7 +12,10 @@ pub fn CardHeader(props: &Props) -> Html {
     }
 }
 
+/// Properties for the card header component. Html between this component will
+/// be rendered inside.
 #[derive(Properties, PartialEq)]
-pub struct Props {
-    pub children: Html, // the field name `children` is important!
+pub(crate) struct Props {
+    /// Children of the component.
+    pub(crate) children: Html,
 }

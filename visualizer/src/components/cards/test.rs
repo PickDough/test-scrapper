@@ -1,7 +1,8 @@
+//! Test card component.
 use yew::prelude::*;
 
 #[function_component]
-pub fn CardBodyTest(props: &PropsTest) -> Html {
+pub(crate) fn CardBodyTest(props: &PropsTest) -> Html {
     let classes =
         classes!("card", format!("text-bg-{}", props.style.clone()), "mb-3");
     html! {
@@ -13,9 +14,13 @@ pub fn CardBodyTest(props: &PropsTest) -> Html {
     }
 }
 
+/// Properties for the test card component.
 #[derive(Properties, PartialEq)]
-pub struct PropsTest {
+pub(crate) struct PropsTest {
+    /// The style of the card. Default is `light`. Look at Bootstrap colors for
+    /// more information.
     #[prop_or(AttrValue::from("light"))]
-    pub style: AttrValue,
-    pub children: Html,
+    pub(crate) style: AttrValue,
+    /// Children of the component.
+    pub(crate) children: Html,
 }

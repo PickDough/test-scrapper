@@ -1,3 +1,4 @@
+//! App component. Groups and renders scenarios.
 use crate::components::cards::{
     header::CardHeader, percentage::CardBodyPercentage,
     scenario::CardBodyScenario, test::CardBodyTest,
@@ -8,33 +9,43 @@ use common::FailedRun;
 use gloo_net::http::Request;
 use yew::prelude::*;
 
+/// Hash Key for the failed run. Uniquely identifies by scenario and job.
 #[derive(Hash, Eq, PartialEq, Debug)]
 struct FailedRunKey {
+    /// Scenario name.
     scenario: String,
+    /// Job name.
     job: String,
 }
+
+/// Hash Value for the failed run. Contains steps, link and count of totatl
+/// occurences compared to total amount of runs.
 struct FailedRunValue {
+    /// Steps of the scenario.
     steps: String,
+    /// Link to the feature file.
     link: String,
+    /// Count of total occurences.
     count: u16,
 }
 
 #[function_component]
 pub fn App() -> Html {
-    let failed_runs = use_state(|| vec![]);
+    let failed_runs: UseStateHandle<Vec<FailedRun>> = use_state(Vec::new);
     {
         let failed_runs = failed_runs.clone();
-        use_effect_with((), move |_| {
+        use_effect_with((), move |()| {
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_runs: Vec<FailedRun> =
-                    Request::get("/test-scrapper/public/runs.json")
-                        .send()
-                        .await
-                        .unwrap()
-                        .json()
-                        .await
-                        .unwrap();
-                failed_runs.set(fetched_runs);
+                let res = Request::get("/test-scrapper/public/runs.json")
+                    .send()
+                    .await;
+
+                if let Ok(fut_runs) = res {
+                    let runs = fut_runs.json().await;
+                    if let Ok(runs) = runs {
+                        failed_runs.set(runs);
+                    }
+                }
             });
             || ()
         });
@@ -55,17 +66,15 @@ pub fn App() -> Html {
             link: failed_scenario.scenario.link.clone(),
             count: 1,
         };
-        failed_runs_map
+        let _unused = failed_runs_map
             .entry(key)
             .and_modify(|v| v.count += 1)
             .or_insert(value);
     }
 
+    #[allow(clippy::as_conversions, clippy::cast_precision_loss)]
     let total_count = failed_runs_map.len() as f64;
-    let mut failed_runs_vec = failed_runs_map
-        .iter()
-        .map(|(key, value)| (key, value))
-        .collect::<Vec<_>>();
+    let mut failed_runs_vec = failed_runs_map.iter().collect::<Vec<_>>();
     failed_runs_vec.sort_by(|(_, a), (_, b)| b.count.cmp(&a.count));
 
     html! {
@@ -95,7 +104,7 @@ pub fn App() -> Html {
                         .map(|(id, (key, value))|
                     {
                     let percentage =
-                        (value.count as f64 / total_count * 100f64)
+                        (f64::from(value.count) / total_count * 100f64)
                         .to_string();
                     html! {
                         <>
@@ -116,8 +125,8 @@ pub fn App() -> Html {
                         </div>
                         <div class="col-2">
                             <CardBodyPercentage style="danger"
-                                progress={percentage.clone()}>
-                                {percentage.clone() + "%"}
+                                percentage={percentage.clone()}>
+                                {percentage.clone().push('%')}
                             </CardBodyPercentage>
                         </div>
                     </>

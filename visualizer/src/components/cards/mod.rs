@@ -1,4 +1,6 @@
-pub mod header;
-pub mod percentage;
-pub mod scenario;
-pub mod test;
+//! This module contains the html cards that are displayed used to show log
+//! insights.
+pub(super) mod header;
+pub(super) mod percentage;
+pub(super) mod scenario;
+pub(super) mod test;
