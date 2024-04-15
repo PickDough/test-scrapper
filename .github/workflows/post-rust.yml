@@ -40,7 +40,7 @@ jobs:
       run: |
         rustup target add wasm32-unknown-unknown
     - name: Build the Rust WASM app and all of its assets
-      run: trunk build --release ./visualizer/index.html
+      run: trunk build --public-url=/test-scrapper/ --release ./visualizer/index.html
 
     - name: Setup Pages
       uses: actions/configure-pages@v3
